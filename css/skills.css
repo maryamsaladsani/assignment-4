@@ -1,0 +1,253 @@
+/* ============================================
+   ABOUT INTRO SECTION (Separate from Skills)
+   ============================================ */
+.about-intro {
+    background: transparent;
+    padding: clamp(3rem, 6vw, 6rem) var(--space-2);
+    margin-top: clamp(4rem, 8vh, 6rem);
+    scroll-margin-top: 72px;
+}
+
+.about-intro__content {
+    max-width: 800px;
+    margin: 0 auto;
+    background: var(--card);
+    border: 2px solid var(--secondary);
+    border-radius: var(--radius);
+    padding: var(--space-4);
+    box-shadow: var(--shadow);
+    text-align: center;
+}
+
+.about-intro h2 {
+    color: var(--brand);
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    font-weight: 700;
+    margin: 0 0 1.5rem;
+}
+
+.about-intro p {
+    color: var(--text);
+    font-size: 1.1rem;
+    line-height: 1.8;
+    margin: 0;
+}
+
+/* ============================================
+   SKILLS SECTION
+   ============================================ */
+.skills {
+    background: transparent;
+    padding: clamp(3rem, 6vw, 6rem) var(--space-2);
+    scroll-margin-top: 72px;
+}
+
+.skills h2 {
+    text-align: center;
+    color: var(--brand);
+    margin-bottom: 3rem;
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    font-weight: 700;
+}
+/* ============================================
+   SKILLS GRID - Equal Height Cards
+   ============================================ */
+.skills__grid {
+    display: grid;
+    gap: var(--space-3);
+    max-width: 900px;
+    margin: 0 auto;
+    align-items: stretch;
+    grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+    .skills__grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* ============================================
+   SKILL CARD - Professional Design
+   ============================================ */
+.skill-card {
+    background: var(--card);
+    border: 2px solid var(--secondary);
+    border-radius: var(--radius);
+    padding: var(--space-4);
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+    min-height: 400px;
+}
+
+.skill-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--brand);
+}
+
+/* Card Icon */
+.skill-card__icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    filter: grayscale(0.2);
+}
+
+.skill-card h3 {
+    margin: 0 0 1.5rem;
+    font-size: clamp(1.3rem, 2.5vw, 1.6rem);
+    color: var(--brand);
+    font-weight: 700;
+}
+
+/* ============================================
+   TECH ICONS GRID - Improved Layout
+   ============================================ */
+.skill-card .tech-icons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+    gap: 1.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    justify-items: center;
+}
+
+.skill-card .tech-icons li {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+/* Skill Logos */
+.skill-logo {
+    width: 64px;
+    height: 64px;
+    object-fit: contain;
+    transition: transform 0.3s ease, filter 0.3s ease;
+    filter: saturate(0.85) brightness(0.98);
+}
+
+.skill-card .tech-icons li:hover .skill-logo {
+    transform: translateY(-5px) scale(1.1);
+    filter: saturate(1) brightness(1);
+}
+
+/* Skill Name Label */
+.skill-name {
+    font-size: 0.85rem;
+    color: var(--muted);
+    font-weight: 600;
+}
+
+/* ============================================
+   SOFT SKILLS LIST - Clean Bullet Design
+   ============================================ */
+.skill-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.skill-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-align: left;
+    padding: 0.75rem 1rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    transition: background 0.2s ease, transform 0.2s ease;
+    border-left: 3px solid transparent;
+}
+
+.skill-list li:hover {
+    background: rgba(253, 56, 102, 0.1);
+    border-left-color: var(--accent);
+    transform: translateX(5px);
+}
+
+.skill-bullet {
+    color: var(--accent);
+    font-weight: bold;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.skill-list li span:last-child {
+    color: var(--text);
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+    .about-intro {
+        padding: 2rem var(--space-2);
+    }
+
+    .about-intro__content {
+        padding: var(--space-3);
+    }
+
+    .skills {
+        padding: 2rem var(--space-2);
+    }
+
+    .skill-card {
+        min-height: auto;
+        padding: var(--space-3);
+    }
+
+    .skill-card .tech-icons {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+
+    .skill-logo {
+        width: 56px;
+        height: 56px;
+    }
+}
+
+/* ============================================
+   LIGHT THEME OVERRIDES
+   ============================================ */
+.theme-light .about-intro__content {
+    background: var(--card);
+    border-color: var(--secondary);
+}
+
+.theme-light .skill-card {
+    background: var(--card);
+    border-color: var(--secondary);
+}
+
+.theme-light .skill-card:hover {
+    border-color: var(--brand);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.theme-light .skill-list li {
+    background: rgba(0, 0, 0, 0.03);
+}
+
+.theme-light .skill-list li:hover {
+    background: rgba(253, 56, 102, 0.08);
+}
+
+.theme-light .skill-name {
+    color: var(--muted);
+}
