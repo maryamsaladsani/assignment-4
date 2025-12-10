@@ -1,146 +1,383 @@
-// Contact Form: Validation + EmailJS Integration
-// Handles real-time validation, inline error messages, and email sending
+/**
+ * Contact Form Module
+ * Handles validation, feedback, and EmailJS integration
+ *
+ * @author Maryam Aladsani
+ * @version 2.0
+ */
 
-(function () {
-    const form = document.querySelector('.contact-form');
-    if (!form) return;
+(function() {
+    'use strict';
 
-    //  EMAILJS CREDENTIALS - Known that can be shared
-    const EMAILJS_PUBLIC_KEY = '-aTao5h9dzB31NTll';
-    const EMAILJS_SERVICE_ID = 'service_pfu3cg6';
-    const EMAILJS_TEMPLATE_ID = 'template_ry5ew38';
+    // EmailJS Configuration
+    const EMAILJS_CONFIG = {
+        publicKey: '-aTao5h9dzB31NTll',
+        serviceId: 'service_pfu3cg6',
+        templateId: 'template_ry5ew38'
+    };
 
-    // Initialize EmailJS
-    emailjs.init(EMAILJS_PUBLIC_KEY);
+    // Storage keys
+    const STORAGE_KEYS = {
+        name: 'contact_name',
+        email: 'contact_email'
+    };
 
-    const nameEl = form.querySelector('#name');
-    const emailEl = form.querySelector('#email');
-    const msgEl = form.querySelector('#message');
-    const statusEl = form.querySelector('#formStatus');
-    const submitBtn = form.querySelector('button[type="submit"]');
-
-    // --- Utilities ---
-    const canStore = () => {
-        try {
-            localStorage.setItem('__t', '1');
-            localStorage.removeItem('__t');
-            return true;
-        } catch {
-            return false;
+    // Validation rules
+    const VALIDATION = {
+        name: {
+            minLength: 2,
+            maxLength: 100,
+            pattern: /^[a-zA-Z\s\-'.]+$/
+        },
+        email: {
+            pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        },
+        message: {
+            minLength: 10,
+            maxLength: 2000
         }
     };
 
-    function setInlineMsg(input, text, ok = false) {
-        let m = input.parentElement.querySelector('.field-msg');
-        if (!m) {
-            m = document.createElement('small');
-            m.className = 'field-msg';
-            input.parentElement.appendChild(m);
+    // DOM Elements
+    const form = document.querySelector('.contact-form');
+
+    // Exit early if form doesn't exist
+    if (!form) {
+        console.warn('[Contact] Contact form not found');
+        return;
+    }
+
+    const elements = {
+        name: form.querySelector('#name'),
+        email: form.querySelector('#email'),
+        message: form.querySelector('#message'),
+        status: form.querySelector('#formStatus'),
+        submit: form.querySelector('button[type="submit"]')
+    };
+
+    // Check required elements
+    if (!elements.name || !elements.email || !elements.message || !elements.submit) {
+        console.error('[Contact] Required form elements missing');
+        return;
+    }
+
+    // Initialize EmailJS
+    if (typeof emailjs !== 'undefined') {
+        emailjs.init(EMAILJS_CONFIG.publicKey);
+    } else {
+        console.warn('[Contact] EmailJS not loaded');
+    }
+
+    /**
+     * Safely check if localStorage is available
+     * @returns {boolean}
+     */
+    function canUseStorage() {
+        try {
+            const testKey = '__contact_test__';
+            localStorage.setItem(testKey, '1');
+            localStorage.removeItem(testKey);
+            return true;
+        } catch (e) {
+            return false;
         }
-        m.textContent = text || '';
-        m.classList.toggle('err', Boolean(text) && !ok);
-        m.classList.toggle('ok', ok);
-        input.classList.toggle('input-error', Boolean(text) && !ok);
-        input.setAttribute('aria-invalid', (Boolean(text) && !ok) ? 'true' : 'false');
     }
 
-    function clearInlineMsgs() {
-        form.querySelectorAll('.field-msg').forEach(el => el.textContent = '');
-        form.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
-        [nameEl, emailEl, msgEl].forEach(i => i.setAttribute('aria-invalid', 'false'));
+    /**
+     * Escape HTML to prevent XSS
+     * @param {string} text
+     * @returns {string}
+     */
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     }
 
-    function showStatus(text, ok = false, loading = false) {
-        statusEl.textContent = text || '';
-        statusEl.className = 'form-status' + (loading ? ' loading' : '') + (ok ? ' status-ok' : text ? ' status-err' : '');
+    /**
+     * Get or create field message element
+     * @param {HTMLElement} input
+     * @returns {HTMLElement}
+     */
+    function getFieldMessage(input) {
+        let msg = input.parentElement.querySelector('.field-msg');
+        if (!msg) {
+            msg = document.createElement('small');
+            msg.className = 'field-msg';
+            msg.setAttribute('aria-live', 'polite');
+            input.parentElement.appendChild(msg);
+        }
+        return msg;
     }
 
-    function validate() {
-        clearInlineMsgs();
-        let valid = true;
+    /**
+     * Set inline validation message
+     * @param {HTMLElement} input
+     * @param {string} text
+     * @param {boolean} isValid
+     */
+    function setFieldMessage(input, text, isValid = false) {
+        const msg = getFieldMessage(input);
+        msg.textContent = text || '';
+        msg.classList.toggle('err', Boolean(text) && !isValid);
+        msg.classList.toggle('ok', isValid && Boolean(text));
 
-        const name = nameEl.value.trim();
-        const email = emailEl.value.trim();
-        const msg = msgEl.value.trim();
+        input.classList.toggle('input-error', Boolean(text) && !isValid);
+        input.setAttribute('aria-invalid', (!isValid && Boolean(text)).toString());
+    }
 
-        if (name.length < 2) {
-            setInlineMsg(nameEl, 'Please enter your name (min 2 characters).');
-            valid = false;
-        } else {
-            setInlineMsg(nameEl, 'Looks good ✓', true);
+    /**
+     * Clear all validation messages
+     */
+    function clearAllMessages() {
+        form.querySelectorAll('.field-msg').forEach(el => {
+            el.textContent = '';
+            el.className = 'field-msg';
+        });
+        form.querySelectorAll('.input-error').forEach(el => {
+            el.classList.remove('input-error');
+        });
+        [elements.name, elements.email, elements.message].forEach(input => {
+            input.setAttribute('aria-invalid', 'false');
+        });
+    }
+
+    /**
+     * Show form status message
+     * @param {string} text
+     * @param {boolean} isSuccess
+     * @param {boolean} isLoading
+     */
+    function showStatus(text, isSuccess = false, isLoading = false) {
+        if (!elements.status) return;
+
+        elements.status.textContent = text || '';
+        elements.status.className = 'form-status';
+
+        if (isLoading) {
+            elements.status.classList.add('loading');
+        } else if (isSuccess) {
+            elements.status.classList.add('status-ok');
+        } else if (text) {
+            elements.status.classList.add('status-err');
+        }
+    }
+
+    /**
+     * Validate name field
+     * @returns {boolean}
+     */
+    function validateName() {
+        const value = elements.name.value.trim();
+        const rules = VALIDATION.name;
+
+        if (value.length < rules.minLength) {
+            setFieldMessage(elements.name, `Name must be at least ${rules.minLength} characters.`, false);
+            return false;
         }
 
-        if (!/^\S+@\S+\.\S+$/.test(email)) {
-            setInlineMsg(emailEl, 'Please enter a valid email like maryamsaladsani@gmail.com.');
-            valid = false;
-        } else {
-            setInlineMsg(emailEl, 'Looks good ✓', true);
+        if (value.length > rules.maxLength) {
+            setFieldMessage(elements.name, `Name must be less than ${rules.maxLength} characters.`, false);
+            return false;
         }
 
-        if (msg.length < 10) {
-            setInlineMsg(msgEl, 'Message must be at least 10 characters.');
-            valid = false;
-        } else {
-            setInlineMsg(msgEl, 'Thanks for the details ✓', true);
+        setFieldMessage(elements.name, 'Looks good ✓', true);
+        return true;
+    }
+
+    /**
+     * Validate email field
+     * @returns {boolean}
+     */
+    function validateEmail() {
+        const value = elements.email.value.trim();
+        const rules = VALIDATION.email;
+
+        if (!rules.pattern.test(value)) {
+            setFieldMessage(elements.email, 'Please enter a valid email address.', false);
+            return false;
         }
 
-        return { valid, name, email, msg };
+        setFieldMessage(elements.email, 'Looks good ✓', true);
+        return true;
     }
 
-    // Prefill from localStorage
-    if (canStore()) {
-        const savedName = localStorage.getItem('contact_name');
-        const savedEmail = localStorage.getItem('contact_email');
-        if (savedName) nameEl.value = savedName;
-        if (savedEmail) emailEl.value = savedEmail;
+    /**
+     * Validate message field
+     * @returns {boolean}
+     */
+    function validateMessage() {
+        const value = elements.message.value.trim();
+        const rules = VALIDATION.message;
+
+        if (value.length < rules.minLength) {
+            setFieldMessage(elements.message, `Message must be at least ${rules.minLength} characters.`, false);
+            return false;
+        }
+
+        if (value.length > rules.maxLength) {
+            setFieldMessage(elements.message, `Message must be less than ${rules.maxLength} characters.`, false);
+            return false;
+        }
+
+        setFieldMessage(elements.message, 'Thanks for the details ✓', true);
+        return true;
     }
 
-    // Live validation
-    ['input', 'blur'].forEach(evt => {
-        nameEl.addEventListener(evt, () => validate());
-        emailEl.addEventListener(evt, () => validate());
-        msgEl.addEventListener(evt, () => validate());
-    });
+    /**
+     * Validate all fields
+     * @returns {Object}
+     */
+    function validateAll() {
+        clearAllMessages();
 
-    // Submit handler with EmailJS
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const { valid, name, email, msg } = validate();
+        const nameValid = validateName();
+        const emailValid = validateEmail();
+        const messageValid = validateMessage();
 
-        if (!valid) {
+        return {
+            isValid: nameValid && emailValid && messageValid,
+            data: {
+                name: elements.name.value.trim(),
+                email: elements.email.value.trim(),
+                message: elements.message.value.trim()
+            }
+        };
+    }
+
+    /**
+     * Save form data to localStorage
+     * @param {string} name
+     * @param {string} email
+     */
+    function saveFormData(name, email) {
+        if (!canUseStorage()) return;
+
+        try {
+            localStorage.setItem(STORAGE_KEYS.name, name);
+            localStorage.setItem(STORAGE_KEYS.email, email);
+        } catch (e) {
+            // Silently fail
+        }
+    }
+
+    /**
+     * Load saved form data from localStorage
+     */
+    function loadSavedData() {
+        if (!canUseStorage()) return;
+
+        const savedName = localStorage.getItem(STORAGE_KEYS.name);
+        const savedEmail = localStorage.getItem(STORAGE_KEYS.email);
+
+        if (savedName) elements.name.value = savedName;
+        if (savedEmail) elements.email.value = savedEmail;
+    }
+
+    /**
+     * Send email via EmailJS
+     * @param {Object} data
+     * @returns {Promise}
+     */
+    async function sendEmail(data) {
+        if (typeof emailjs === 'undefined') {
+            throw new Error('Email service unavailable');
+        }
+
+        return emailjs.send(
+            EMAILJS_CONFIG.serviceId,
+            EMAILJS_CONFIG.templateId,
+            {
+                from_name: data.name,
+                from_email: data.email,
+                message: data.message,
+                to_name: 'Maryam'
+            }
+        );
+    }
+
+    /**
+     * Handle form submission
+     * @param {Event} event
+     */
+    async function handleSubmit(event) {
+        event.preventDefault();
+
+        const { isValid, data } = validateAll();
+
+        if (!isValid) {
             showStatus('Please fix the highlighted fields.', false, false);
+            // Focus first invalid field
+            const firstInvalid = form.querySelector('[aria-invalid="true"]');
+            if (firstInvalid) firstInvalid.focus();
             return;
         }
 
-        // Save for next time
-        if (canStore()) {
-            localStorage.setItem('contact_name', name);
-            localStorage.setItem('contact_email', email);
-        }
+        // Save data for next time
+        saveFormData(data.name, data.email);
 
-        // Loading state
-        submitBtn.disabled = true;
+        // Disable submit and show loading
+        elements.submit.disabled = true;
         showStatus('Sending…', false, true);
 
         try {
-            // Send via EmailJS
-            await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-                from_name: name,
-                from_email: email,
-                message: msg,
-                to_name: 'Maryam',
-            });
+            await sendEmail(data);
 
             showStatus('Thanks! Your message has been sent. ✓', true, false);
             form.reset();
-            clearInlineMsgs();
+            clearAllMessages();
 
         } catch (error) {
-            console.error('EmailJS Error:', error);
-            showStatus('Could not send right now. Please try again.', false, false);
+            console.error('[Contact] Send error:', error);
+            showStatus('Could not send message. Please try again or email directly.', false, false);
         } finally {
-            submitBtn.disabled = false;
+            elements.submit.disabled = false;
         }
-    });
-})();
+    }
 
+    /**
+     * Initialize module
+     */
+    function init() {
+        // Load saved data
+        loadSavedData();
+
+        // Set up validation on blur/input
+        elements.name.addEventListener('blur', validateName);
+        elements.name.addEventListener('input', () => {
+            if (elements.name.classList.contains('input-error')) {
+                validateName();
+            }
+        });
+
+        elements.email.addEventListener('blur', validateEmail);
+        elements.email.addEventListener('input', () => {
+            if (elements.email.classList.contains('input-error')) {
+                validateEmail();
+            }
+        });
+
+        elements.message.addEventListener('blur', validateMessage);
+        elements.message.addEventListener('input', () => {
+            if (elements.message.classList.contains('input-error')) {
+                validateMessage();
+            }
+        });
+
+        // Set up form submission
+        form.addEventListener('submit', handleSubmit);
+
+        // Set initial ARIA attributes
+        form.setAttribute('novalidate', '');
+        [elements.name, elements.email, elements.message].forEach(input => {
+            input.setAttribute('aria-invalid', 'false');
+        });
+    }
+
+    // Initialize on DOM ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+})();
