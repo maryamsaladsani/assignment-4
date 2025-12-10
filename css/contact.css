@@ -1,155 +1,191 @@
 /* ============================================
    CONTACT SECTION
    ============================================ */
-
 .contact {
-    background: var(--card);
-    padding: var(--space-4) var(--space-2);
-    max-width: 720px;
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    margin: 0 auto clamp(2rem, 4vh, -2rem);
-    scroll-margin-top: 72px;
+    max-width: 640px;
+    margin: 0 auto var(--space-8);
+    padding: var(--space-10);
+    background: var(--color-surface);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
 }
 
 .contact h2 {
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-brand-primary);
     text-align: center;
-    color: var(--brand);
-    margin-bottom: var(--space-3);
-    font-size: clamp(1.8rem, 4vw, 2.5rem);
-    font-weight: 700;
+    margin: 0 0 var(--space-3);
 }
 
-.contact p {
+.contact > p {
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
     text-align: center;
-    color: var(--muted);
-    margin-bottom: var(--space-3);
+    margin: 0 0 var(--space-6);
+}
+
+/* ============================================
+   CONTACT ICONS (in contact section)
+   ============================================ */
+.contact .hero__icons {
+    justify-content: center;
+    margin-bottom: var(--space-8);
 }
 
 /* ============================================
    CONTACT FORM
    ============================================ */
-
 .contact-form {
-    display: grid;
-    gap: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
 }
 
 .form-row {
-    display: grid;
-    gap: .4rem;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
 }
 
 /* ============================================
    FORM LABELS
    ============================================ */
-
-label {
-    font-weight: 600;
-    color: var(--muted);
+.contact-form label {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-secondary);
 }
 
 /* ============================================
    FORM INPUTS
    ============================================ */
-
-input,
-textarea {
-    font: inherit;
-    border: 2px solid rgba(255, 255, 255, .1);
-    background: var(--bg);
-    color: var(--text);
-    border-radius: .6rem;
-    padding: .7rem .9rem;
-    outline: none;
-    resize: none;
-    box-sizing: border-box;
+.contact-form input,
+.contact-form textarea {
+    width: 100%;
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-bg-primary);
+    border: var(--border-width) solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-base);
+    resize: vertical;
     -webkit-appearance: none;
     appearance: none;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    transition:
+            border-color var(--transition-fast),
+            box-shadow var(--transition-fast);
 }
 
-input:focus,
-textarea:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(253, 56, 102, .3);
+.contact-form input::placeholder,
+.contact-form textarea::placeholder {
+    color: var(--color-text-muted);
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px rgba(253, 56, 102, 0.2);
+}
+
+.contact-form textarea {
+    min-height: 120px;
 }
 
 /* ============================================
-   FORM VALIDATION STATES
+   VALIDATION STATES
    ============================================ */
+
+/* Error state */
+.contact-form .input-error {
+    border-color: var(--color-error) !important;
+    box-shadow: 0 0 0 3px rgba(255, 77, 79, 0.15);
+}
 
 /* Inline field messages */
 .field-msg {
-    margin: .35rem 0 0;
-    font-size: .9rem;
-    line-height: 1.2;
+    display: block;
+    margin-top: var(--space-1);
+    font-size: var(--font-size-xs);
+    line-height: var(--line-height-tight);
+    min-height: 1.2em;
 }
 
 .field-msg.err {
-    color: #ff4d4f;
+    color: var(--color-error);
 }
 
 .field-msg.ok {
-    color: #0acf83;
-}
-
-/* Error highlight */
-.input-error {
-    border-color: #ff4d4f !important;
-    box-shadow: 0 0 0 2px rgba(255, 77, 79, .15);
+    color: var(--color-success);
 }
 
 /* ============================================
    SUBMIT BUTTON
    ============================================ */
-
-button[type="submit"] {
-    cursor: pointer;
-    border: none;
-    background: var(--brand);
-    color: var(--text);
-    padding: .75rem 1rem;
-    border-radius: .7rem;
-    font-weight: 700;
-    font-size: 1rem;
-    transition: transform .12s ease, background .2s ease;
+.contact-form button[type="submit"] {
+    padding: var(--space-4) var(--space-6);
+    background: var(--color-brand-primary);
+    color: var(--color-text-primary);
+    border-radius: var(--radius-lg);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-bold);
+    transition:
+            background var(--transition-fast),
+            transform var(--transition-fast);
 }
 
-button[type="submit"]:hover {
-    background: var(--accent);
+.contact-form button[type="submit"]:hover {
+    background: var(--color-accent);
     transform: translateY(-2px);
 }
 
-button[type="submit"]:active {
+.contact-form button[type="submit"]:active {
     transform: translateY(0);
 }
 
-button[type="submit"]:disabled {
+.contact-form button[type="submit"]:disabled {
     opacity: 0.6;
     cursor: not-allowed;
     transform: none;
 }
 
 /* ============================================
-   FORM STATUS (FEEDBACK)
+   FORM STATUS (Feedback)
    ============================================ */
-
 .form-status {
-    min-height: 1.25rem;
-    margin: .5rem 0;
+    min-height: 1.5rem;
     text-align: center;
-    font-size: 0.95rem;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
 }
 
 .form-status.loading::after {
-    content: " Loading…";
+    content: '';
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    margin-left: var(--space-2);
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    border-radius: var(--radius-full);
+    animation: spinner-rotate 0.6s linear infinite;
+    vertical-align: middle;
 }
 
-/* Success state */
-@keyframes popIn {
+.status-ok {
+    color: var(--color-success);
+    animation: status-pop 0.25s ease;
+}
+
+.status-err {
+    color: var(--color-error);
+    animation: status-pop 0.25s ease;
+}
+
+@keyframes status-pop {
     from {
-        transform: scale(.98);
+        transform: scale(0.95);
         opacity: 0;
     }
     to {
@@ -158,129 +194,43 @@ button[type="submit"]:disabled {
     }
 }
 
-.status-ok {
-    color: #0acf83;
-    animation: popIn .25s ease;
-}
-
-.status-err {
-    color: #ff4d4f;
-    animation: popIn .25s ease;
-}
-
-/* ============================================
-   CONTACT ICONS (in hero section)
-   ============================================ */
-
-.hero__icons {
-    display: flex;
-    gap: .8rem;
-    margin-top: -0.5rem;
-    justify-content: center;
-}
-
-.icon {
-    width: clamp(44px, 8vw, 64px);
-    height: clamp(44px, 8vw, 64px);
-    border-radius: 50%;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform .12s ease, background .2s ease, border-color .2s ease;
-}
-
-.icon:hover {
-    transform: translateY(-2px);
-    background: rgba(253, 56, 102, .2);
-    border-color: var(--brand);
-}
-
-.icon::before {
-    content: "";
-    display: block;
-    width: 60%;
-    height: 60%;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-}
-
-.hero__icons a[aria-label="Email"]::before {
-    background-image: url('../assets/images/contactIcons/1.png');
-}
-
-.hero__icons a[aria-label="GitHub"]::before {
-    background-image: url('../assets/images/contactIcons/2.png');
-}
-
-.hero__icons a[aria-label="LinkedIn"]::before {
-    background-image: url('../assets/images/contactIcons/3.png');
-}
-
-/* ============================================
-   RESPONSIVE
-   ============================================ */
-
-@media (max-width: 768px) {
-    .contact {
-        padding: var(--space-3) var(--space-2);
-        margin: 0 auto 2rem;
-    }
-
-    .contact h2 {
-        font-size: 2rem;
-    }
-}
-
 /* ============================================
    LIGHT THEME OVERRIDES
    ============================================ */
-
 .theme-light .contact {
-    background: var(--card);
-    box-shadow: var(--shadow);
+    background: var(--color-surface);
 }
 
-.theme-light input,
-.theme-light textarea {
-    border-color: rgba(0, 0, 0, .1);
-    background: var(--bg);
-    color: var(--text);
+.theme-light .contact-form input,
+.theme-light .contact-form textarea {
+    background: var(--color-bg-primary);
+    border-color: rgba(0, 0, 0, 0.1);
 }
 
-.theme-light input:focus,
-.theme-light textarea:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(253, 56, 102, .2);
+.theme-light .contact-form input:focus,
+.theme-light .contact-form textarea:focus {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px rgba(253, 56, 102, 0.15);
 }
 
-.theme-light .input-error {
-    border-color: #ff4d4f !important;
-    box-shadow: 0 0 0 2px rgba(255, 77, 79, .15);
+.theme-light .contact-form button[type="submit"] {
+    color: var(--color-bg-primary);
 }
 
-.theme-light button[type="submit"] {
-    background: var(--brand);
-    color: var(--bg);
-}
-
-.theme-light button[type="submit"]:hover {
-    background: var(--accent);
+.theme-light .contact-form button[type="submit"]:hover {
     color: white;
 }
 
-.theme-light .field-msg.err {
-    color: #ff4d4f;
-}
+/* ============================================
+   RESPONSIVE ADJUSTMENTS
+   ============================================ */
+@media (max-width: 767px) {
+    .contact {
+        margin: 0 var(--container-padding) var(--space-8);
+        padding: var(--space-6);
+    }
 
-.theme-light .field-msg.ok {
-    color: #0acf83;
-}
-
-.theme-light .status-ok {
-    color: #0acf83;
-}
-
-.theme-light .status-err {
-    color: #ff4d4f;
+    .contact h2 {
+        font-size: var(--font-size-2xl);
+    }
 }

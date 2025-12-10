@@ -1,177 +1,211 @@
 /* ============================================
    HERO SECTION
    ============================================ */
-
 .hero {
     position: relative;
-    isolation: isolate;
-    min-height: clamp(520px, 80vh, 760px);
+    min-height: clamp(500px, 80vh, 800px);
     display: grid;
-    align-items: center;
-    grid-template-columns: 1fr;
-    gap: var(--space-3);
-    max-width: var(--maxw);
-    margin: 0 auto;
-    padding: var(--space-4) var(--space-2);
-    background: transparent;
-
-}
-
-/* Split hero layout: photo left, text right */
-.hero.hero--split {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1.25rem;
-    align-items: center;
-    min-height: clamp(420px, 60vh, 620px);
-    max-width: var(--maxw);
-    margin-top: 2rem;
     place-items: center;
-    text-align: center;
-    padding-top: clamp(2rem, 10vh, 6rem);
-    box-sizing: border-box;
+    padding: var(--space-16) var(--container-padding) var(--space-12);
 }
 
-/* Desktop: two columns */
-@media (min-width: 768px) {
-    .hero.hero--split {
-        grid-template-columns: 1fr 1.15fr;
-        place-items: center start;
-        text-align: left;
-        gap: clamp(1rem, 4vw, 3rem);
-    }
-
-    .hero__icons {
-        justify-content: center;
-        align-self: center;
-    }
-
-    .hero__content {
-        justify-self: start;
-        text-align: left;
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: clamp(.4rem, 1.2vw, .9rem);
-        margin: 0;
-        max-width: 42ch;
-    }
-
-    .hero__photo {
-        justify-self: end;
-        transform: translateX(12px);
-    }
+.hero.hero--split {
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+    text-align: center;
+    max-width: var(--container-max);
+    margin-inline: auto;
+    padding-top: clamp(var(--space-8), 12vh, var(--space-16));
 }
 
 /* ============================================
-   HERO PHOTO (with rotating border)
+   HERO PHOTO
    ============================================ */
-
 .hero__photo {
     position: relative;
-    display: inline-block;
-    width: clamp(160px, 36vw, 320px);
-    height: clamp(160px, 36vw, 320px);
-    border-radius: 50%;
-    overflow: visible;
+    width: clamp(180px, 40vw, 300px);
+    aspect-ratio: 1;
+    margin-inline: auto;
 }
 
 .hero__photo img {
     width: 100%;
     height: 100%;
-    display: block;
-    border-radius: 50%;
     object-fit: cover;
+    border-radius: var(--radius-full);
     position: relative;
     z-index: 2;
 }
 
-/* Rotating border */
+/* Animated border ring */
 .hero__photo::before {
-    content: "";
+    content: '';
     position: absolute;
-    inset: clamp(-6px, -1.2vw, -10px);
-    border-width: clamp(8px, 1.2vw, 12px);
-    border-style: solid;
-    border-radius: 50%;
-    border-top-color: var(--accent);
-    border-right-color: var(--brand);
-    border-bottom-color: var(--secondary);
-    border-left-color: var(--muted);
-    animation: spin 5s linear infinite;
-    pointer-events: none;
+    inset: clamp(-8px, -1.5vw, -12px);
+    border-radius: var(--radius-full);
+    border: clamp(6px, 1vw, 10px) solid transparent;
+    border-top-color: var(--color-accent);
+    border-right-color: var(--color-brand-primary);
+    border-bottom-color: var(--color-brand-tertiary);
+    border-left-color: var(--color-text-muted);
+    animation: hero-spin 6s linear infinite;
     z-index: 1;
 }
 
-@keyframes spin {
+@keyframes hero-spin {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
+}
+
+/* Subtle glow effect */
+.hero__photo::after {
+    content: '';
+    position: absolute;
+    inset: -20px;
+    background: radial-gradient(
+            circle,
+            rgba(253, 56, 102, 0.15) 0%,
+            transparent 70%
+    );
+    z-index: 0;
+    pointer-events: none;
 }
 
 /* ============================================
    HERO CONTENT
    ============================================ */
-
-.hero__content--red h1,
-.hero__content--red .eyebrow,
-.hero__content--red .subtitle {
-    color: var(--muted);
+.hero__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
 }
 
-.hero__content--red h1 {
-    color: var(--text);
-    margin-top: 1rem;
-    margin-bottom: 0.5rem;
-    font-size: clamp(2rem, 5.8vw, 3.2rem);
-    line-height: 1.1;
-    font-weight: 800;
+.hero__content h1 {
+    font-size: var(--font-size-4xl);
+    font-weight: var(--font-weight-extrabold);
+    line-height: var(--line-height-tight);
+    color: var(--color-text-primary);
+    margin: 0;
+}
+
+.hero__content h1 .first-name,
+.hero__content h1 .last-name {
+    display: block;
 }
 
 .eyebrow {
-    letter-spacing: .06em;
-    text-transform: none;
-    font-weight: 600;
-    margin: 0 0 .5rem;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-secondary);
+    letter-spacing: 0.05em;
+    margin: 0;
 }
 
 .subtitle {
-    margin: 0 0 1.1rem;
-    color: var(--accent);
-    font-weight: 500;
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    font-style: italic;
+    color: var(--color-accent);
+    margin: var(--space-2) 0 var(--space-4);
 }
 
 /* ============================================
-   HERO ICONS (Contact Icons)
+   GREETING (Dynamic)
    ============================================ */
+.hero-greeting {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-secondary);
+    margin: var(--space-2) 0;
+}
 
+#usernameForm {
+    display: flex;
+    gap: var(--space-2);
+    justify-content: center;
+    margin: var(--space-2) 0;
+}
+
+#usernameInput {
+    padding: var(--space-2) var(--space-3);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-sm);
+    min-width: 150px;
+    transition: border-color var(--transition-fast);
+}
+
+#usernameInput:focus {
+    border-color: var(--color-accent);
+    outline: none;
+}
+
+#usernameForm button {
+    padding: var(--space-2) var(--space-4);
+    background: var(--color-brand-primary);
+    color: var(--color-text-primary);
+    border-radius: var(--radius-md);
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-sm);
+    transition: background var(--transition-fast), transform var(--transition-fast);
+}
+
+#usernameForm button:hover {
+    background: var(--color-accent);
+    transform: translateY(-1px);
+}
+
+#changeNameBtn {
+    color: var(--color-accent);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    padding: var(--space-1) var(--space-2);
+    transition: color var(--transition-fast);
+}
+
+#changeNameBtn:hover {
+    color: var(--color-accent-hover);
+}
+
+/* ============================================
+   HERO ICONS (Social Links)
+   ============================================ */
 .hero__icons {
     display: flex;
-    gap: .8rem;
-    margin-top: -0.5rem;
+    gap: var(--space-3);
     justify-content: center;
+    margin-top: var(--space-2);
 }
 
 .icon {
-    width: clamp(44px, 8vw, 64px);
-    height: clamp(44px, 8vw, 64px);
-    border-radius: 50%;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    transition: transform .12s ease, background .2s ease, border-color .2s ease;
+    width: clamp(48px, 10vw, 56px);
+    height: clamp(48px, 10vw, 56px);
+    border-radius: var(--radius-full);
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid transparent;
+    transition:
+            transform var(--transition-fast),
+            background var(--transition-fast),
+            border-color var(--transition-fast);
 }
 
 .icon:hover {
-    transform: translateY(-2px);
-    background: rgba(253, 56, 102, .2);
-    border-color: var(--brand);
+    transform: translateY(-3px);
+    background: rgba(253, 56, 102, 0.15);
+    border-color: var(--color-brand-primary);
 }
 
 .icon::before {
-    content: "";
+    content: '';
     display: block;
-    width: 60%;
-    height: 60%;
+    width: 55%;
+    height: 55%;
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
@@ -189,93 +223,55 @@
     background-image: url('../assets/images/contactIcons/3.png');
 }
 
-/* ============================================
-   FOOTER
-   ============================================ */
-
-.site-footer {
-    background: var(--bg);
-    text-align: center;
-    color: var(--muted);
-    padding: var(--space-3) var(--space-2);
-    border-top: 1px solid rgba(255, 255, 255, .08);
+/* Light theme icon adjustments */
+.theme-light .icon {
+    background: rgba(0, 0, 0, 0.03);
 }
 
-.site-footer a {
-    color: var(--accent);
+.theme-light .icon:hover {
+    background: rgba(253, 56, 102, 0.1);
 }
 
 /* ============================================
-   UTILITY CLASSES
+   DESKTOP LAYOUT
    ============================================ */
-
-.hidden {
-    display: none;
-}
-
-.visually-hidden {
-    position: absolute !important;
-    height: 1px;
-    width: 1px;
-    overflow: hidden;
-    clip: rect(1px, 1px, 1px, 1px);
-    white-space: nowrap;
-}
-
-/* ============================================
-   DYNAMIC CONTENT (Greeting)
-   ============================================ */
-
-.hero-greeting {
-    font-weight: 600;
-    margin: .25rem 0 .5rem;
-}
-
-#usernameForm {
-    display: flex;
-    gap: .5rem;
-    margin: .5rem 0;
-}
-
-#usernameInput {
-    padding: .45rem .6rem;
-    border-radius: .5rem;
-    border: 1px solid #ddd;
-}
-
-#changeNameBtn {
-    background: none;
-    border: none;
-    color: #0d6efd;
-    cursor: pointer;
-    padding: 0;
-}
-
-/* ============================================
-   HERO MOBILE CENTERING
-   ============================================ */
-
-@media (max-width: 768px) {
-    .hero__content {
-        text-align: center;
+@media (min-width: 768px) {
+    .hero.hero--split {
+        grid-template-columns: 1fr 1.2fr;
+        text-align: left;
+        gap: clamp(var(--space-8), 5vw, var(--space-12));
         align-items: center;
     }
 
-    .hero-greeting {
-        text-align: center;
-        width: 100%;
+    .hero__photo {
+        justify-self: end;
+        margin-inline: 0;
     }
 
-    #usernameForm {
-        justify-content: center;
-        width: 100%;
-    }
-
-    #changeNameBtn {
-        text-align: center;
+    .hero__content {
+        align-items: flex-start;
+        justify-self: start;
     }
 
     .hero__icons {
-        justify-content: center;
+        justify-content: flex-start;
+    }
+
+    #usernameForm {
+        justify-content: flex-start;
+    }
+}
+
+/* ============================================
+   MOBILE ADJUSTMENTS
+   ============================================ */
+@media (max-width: 767px) {
+    .hero {
+        min-height: auto;
+        padding: var(--space-8) var(--container-padding) var(--space-12);
+    }
+
+    .hero__photo {
+        width: clamp(160px, 50vw, 220px);
     }
 }
