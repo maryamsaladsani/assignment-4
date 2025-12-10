@@ -1,10 +1,10 @@
 /**
  * Theme Toggle Module
  * Handles dark/light mode switching with localStorage persistence
- * and system preference detection
+ * Dark mode is the default
  *
  * @author Maryam Aladsani
- * @version 2.0
+ * @version 2.1
  */
 
 (function() {
@@ -64,17 +64,6 @@
     }
 
     /**
-     * Detect system color scheme preference
-     * @returns {string}
-     */
-    function getSystemPreference() {
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
-            return THEME_LIGHT;
-        }
-        return THEME_DARK;
-    }
-
-    /**
      * Apply theme to document
      * @param {string} theme - 'light' or 'dark'
      */
@@ -121,9 +110,9 @@
      * Initialize theme system
      */
     function init() {
-        // Determine initial theme: saved > system preference > dark
+        // Get saved theme, default to DARK if none saved
         const savedTheme = getSavedTheme();
-        const initialTheme = savedTheme || getSystemPreference();
+        const initialTheme = savedTheme || THEME_DARK;
 
         // Apply initial theme
         applyTheme(initialTheme);
@@ -131,11 +120,10 @@
         // Listen for toggle clicks
         toggleBtn.addEventListener('click', toggleTheme);
 
-        // Listen for system preference changes
+        // Listen for system preference changes (only if user hasn't set preference)
         if (window.matchMedia) {
             const mediaQuery = window.matchMedia('(prefers-color-scheme: light)');
 
-            // Modern browsers
             if (mediaQuery.addEventListener) {
                 mediaQuery.addEventListener('change', (e) => {
                     // Only auto-switch if user hasn't set a preference
