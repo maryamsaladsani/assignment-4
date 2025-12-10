@@ -3,7 +3,7 @@
  * Handles validation, feedback, and EmailJS integration
  *
  * @author Maryam Aladsani
- * @version 2.0
+ * @version 2.1
  */
 
 (function() {
@@ -26,8 +26,7 @@
     const VALIDATION = {
         name: {
             minLength: 2,
-            maxLength: 100,
-            pattern: /^[a-zA-Z\s\-'.]+$/
+            maxLength: 100
         },
         email: {
             pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -37,6 +36,9 @@
             maxLength: 2000
         }
     };
+
+    // Track if EmailJS is initialized
+    let emailjsReady = false;
 
     // DOM Elements
     const form = document.querySelector('.contact-form');
@@ -61,11 +63,19 @@
         return;
     }
 
-    // Initialize EmailJS
-    if (typeof emailjs !== 'undefined') {
-        emailjs.init(EMAILJS_CONFIG.publicKey);
-    } else {
-        console.warn('[Contact] EmailJS not loaded');
+    /**
+     * Initialize EmailJS when it's available
+     */
+    function initEmailJS() {
+        if (typeof emailjs !== 'undefined' && !emailjsReady) {
+            try {
+                emailjs.init(EMAILJS_CONFIG.publicKey);
+                emailjsReady = true;
+                console.log('[Contact] EmailJS initialized successfully');
+            } catch (e) {
+                console.error('[Contact] EmailJS init error:', e);
+            }
+        }
     }
 
     /**
@@ -81,17 +91,6 @@
         } catch (e) {
             return false;
         }
-    }
-
-    /**
-     * Escape HTML to prevent XSS
-     * @param {string} text
-     * @returns {string}
-     */
-    function escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
     }
 
     /**
@@ -280,8 +279,13 @@
      * @returns {Promise}
      */
     async function sendEmail(data) {
+        // Try to initialize EmailJS if not ready
+        if (!emailjsReady) {
+            initEmailJS();
+        }
+
         if (typeof emailjs === 'undefined') {
-            throw new Error('Email service unavailable');
+            throw new Error('Email service not available. Please try again in a moment.');
         }
 
         return emailjs.send(
@@ -341,6 +345,13 @@
     function init() {
         // Load saved data
         loadSavedData();
+
+        // Try to init EmailJS immediately
+        initEmailJS();
+
+        // Also try after a short delay (in case EmailJS loads later)
+        setTimeout(initEmailJS, 500);
+        setTimeout(initEmailJS, 1500);
 
         // Set up validation on blur/input
         elements.name.addEventListener('blur', validateName);
