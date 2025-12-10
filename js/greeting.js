@@ -1,9 +1,9 @@
 /**
  * Personalized Greeting Module
- * Displays time-based greeting with optional saved username
+ * Shows modal popup on first visit, simple greeting afterwards
  *
  * @author Maryam Aladsani
- * @version 2.0
+ * @version 3.0
  */
 
 (function() {
@@ -16,9 +16,6 @@
 
     // DOM Elements
     const greetingEl = document.getElementById('greeting');
-    const form = document.getElementById('usernameForm');
-    const input = document.getElementById('usernameInput');
-    const changeBtn = document.getElementById('changeNameBtn');
 
     // Exit early if required elements don't exist
     if (!greetingEl) {
@@ -90,7 +87,7 @@
         return input
             .trim()
             .slice(0, MAX_NAME_LENGTH)
-            .replace(/[<>'"&]/g, ''); // Remove potentially dangerous characters
+            .replace(/[<>'"&]/g, '');
     }
 
     /**
@@ -103,7 +100,7 @@
     }
 
     /**
-     * Update the greeting display
+     * Update the greeting display (simple one-line)
      */
     function updateGreeting() {
         const name = getSavedName();
@@ -112,48 +109,111 @@
         greetingEl.textContent = name
             ? `${timeGreeting}, ${name}!`
             : `${timeGreeting}!`;
-
-        // Toggle form visibility
-        const hasName = Boolean(name);
-        if (form) {
-            form.classList.toggle('hidden', hasName);
-        }
-        if (changeBtn) {
-            changeBtn.classList.toggle('hidden', !hasName);
-        }
     }
 
     /**
-     * Handle form submission
-     * @param {Event} event
+     * Create and show the welcome modal
      */
-    function handleSubmit(event) {
-        event.preventDefault();
+    function showWelcomeModal() {
+        // Create modal overlay
+        const overlay = document.createElement('div');
+        overlay.className = 'greeting-modal-overlay';
+        overlay.innerHTML = `
+            <div class="greeting-modal" role="dialog" aria-labelledby="modal-title" aria-modal="true">
+                <h2 id="modal-title">Welcome! 👋</h2>
+                <p>What should I call you?</p>
+                <form id="modalNameForm" autocomplete="off">
+                    <input 
+                        type="text" 
+                        id="modalNameInput" 
+                        placeholder="Enter your name..."
+                        minlength="2"
+                        maxlength="50"
+                        required
+                        autofocus
+                    >
+                    <div class="modal-buttons">
+                        <button type="button" class="modal-skip">Skip</button>
+                        <button type="submit" class="modal-save">Continue</button>
+                    </div>
+                </form>
+            </div>
+        `;
 
-        if (!input) return;
+        document.body.appendChild(overlay);
 
-        const sanitized = sanitizeName(input.value);
+        // Trigger animation
+        requestAnimationFrame(() => {
+            overlay.classList.add('active');
+        });
 
-        if (isValidName(sanitized)) {
-            saveName(sanitized);
-            input.value = '';
+        // Prevent body scroll
+        document.body.style.overflow = 'hidden';
+
+        // Get modal elements
+        const modal = overlay.querySelector('.greeting-modal');
+        const form = overlay.querySelector('#modalNameForm');
+        const input = overlay.querySelector('#modalNameInput');
+        const skipBtn = overlay.querySelector('.modal-skip');
+
+        // Focus input
+        setTimeout(() => input.focus(), 100);
+
+        // Handle form submit
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const sanitized = sanitizeName(input.value);
+
+            if (isValidName(sanitized)) {
+                saveName(sanitized);
+                closeModal();
+                updateGreeting();
+            } else {
+                input.classList.add('input-error');
+                input.focus();
+            }
+        });
+
+        // Handle skip
+        skipBtn.addEventListener('click', () => {
+            // Save empty string to indicate user has seen the modal
+            saveName('');
+            closeModal();
             updateGreeting();
-        } else {
-            // Provide feedback for invalid input
-            input.setAttribute('aria-invalid', 'true');
-            input.focus();
-        }
-    }
+        });
 
-    /**
-     * Handle change name button click
-     */
-    function handleChangeName() {
-        if (form) {
-            form.classList.remove('hidden');
+        // Handle input validation feedback
+        input.addEventListener('input', () => {
+            input.classList.remove('input-error');
+        });
+
+        // Close modal on overlay click (not modal itself)
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                saveName('');
+                closeModal();
+                updateGreeting();
+            }
+        });
+
+        // Close modal on Escape key
+        function escHandler(e) {
+            if (e.key === 'Escape') {
+                saveName('');
+                closeModal();
+                updateGreeting();
+                document.removeEventListener('keydown', escHandler);
+            }
         }
-        if (input) {
-            input.focus();
+        document.addEventListener('keydown', escHandler);
+
+        function closeModal() {
+            overlay.classList.remove('active');
+            overlay.classList.add('closing');
+            setTimeout(() => {
+                overlay.remove();
+                document.body.style.overflow = '';
+            }, 300);
         }
     }
 
@@ -161,27 +221,17 @@
      * Initialize greeting module
      */
     function init() {
-        // Set up form submission
-        if (form) {
-            form.addEventListener('submit', handleSubmit);
+        const savedName = getSavedName();
+
+        // If no saved name (first visit), show modal
+        if (savedName === null) {
+            showWelcomeModal();
+        } else {
+            // Otherwise just show the greeting
+            updateGreeting();
         }
 
-        // Set up change name button
-        if (changeBtn) {
-            changeBtn.addEventListener('click', handleChangeName);
-        }
-
-        // Set up input validation feedback
-        if (input) {
-            input.addEventListener('input', () => {
-                input.setAttribute('aria-invalid', 'false');
-            });
-        }
-
-        // Initial render
-        updateGreeting();
-
-        // Update greeting on visibility change (if user returns to tab)
+        // Update greeting on visibility change
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') {
                 updateGreeting();

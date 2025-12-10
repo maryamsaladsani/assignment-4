@@ -1,0 +1,163 @@
+/* ============================================
+   GREETING MODAL
+   Popup for first-time visitors
+   ============================================ */
+
+.greeting-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.greeting-modal-overlay.active {
+    opacity: 1;
+}
+
+.greeting-modal-overlay.closing {
+    opacity: 0;
+}
+
+.greeting-modal {
+    width: 90%;
+    max-width: 400px;
+    padding: var(--space-8);
+    background: var(--color-surface);
+    border: 2px solid var(--color-brand-tertiary);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-xl), 0 0 40px rgba(253, 56, 102, 0.15);
+    text-align: center;
+    transform: scale(0.9) translateY(20px);
+    transition: transform 0.3s ease;
+}
+
+.greeting-modal-overlay.active .greeting-modal {
+    transform: scale(1) translateY(0);
+}
+
+.greeting-modal-overlay.closing .greeting-modal {
+    transform: scale(0.9) translateY(20px);
+}
+
+.greeting-modal h2 {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-brand-primary);
+    margin: 0 0 var(--space-2);
+}
+
+.greeting-modal p {
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    margin: 0 0 var(--space-6);
+}
+
+.greeting-modal form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.greeting-modal input {
+    width: 100%;
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-bg-primary);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-base);
+    text-align: center;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.greeting-modal input::placeholder {
+    color: var(--color-text-muted);
+}
+
+.greeting-modal input:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px rgba(253, 56, 102, 0.2);
+}
+
+.greeting-modal input.input-error {
+    border-color: var(--color-error);
+    box-shadow: 0 0 0 3px rgba(255, 77, 79, 0.15);
+    animation: shake 0.4s ease;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-8px); }
+    40%, 80% { transform: translateX(8px); }
+}
+
+.modal-buttons {
+    display: flex;
+    gap: var(--space-3);
+    justify-content: center;
+}
+
+.modal-buttons button {
+    flex: 1;
+    padding: var(--space-3) var(--space-5);
+    border-radius: var(--radius-lg);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    transition: all var(--transition-fast);
+}
+
+.modal-skip {
+    background: transparent;
+    border: 2px solid var(--border-color);
+    color: var(--color-text-secondary);
+}
+
+.modal-skip:hover {
+    border-color: var(--color-text-muted);
+    color: var(--color-text-primary);
+}
+
+.modal-save {
+    background: var(--color-brand-primary);
+    border: none;
+    color: var(--color-bg-primary);
+}
+
+.modal-save:hover {
+    background: var(--color-accent);
+    transform: translateY(-2px);
+}
+
+/* Light theme adjustments */
+.theme-light .greeting-modal {
+    background: var(--color-surface);
+    box-shadow: var(--shadow-xl);
+}
+
+.theme-light .greeting-modal input {
+    background: var(--color-bg-primary);
+}
+
+/* Mobile adjustments */
+@media (max-width: 480px) {
+    .greeting-modal {
+        padding: var(--space-6);
+        margin: var(--space-4);
+    }
+
+    .greeting-modal h2 {
+        font-size: var(--font-size-xl);
+    }
+
+    .modal-buttons {
+        flex-direction: column;
+    }
+}
