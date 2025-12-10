@@ -33,6 +33,32 @@
     margin-bottom: var(--space-8);
 }
 
+/* Ensure icons display in contact section */
+.contact .icon::before {
+    content: '';
+    display: block;
+    width: 55%;
+    height: 55%;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.contact a[aria-label="Send email"]::before,
+.contact a[aria-label="Email"]::before {
+    background-image: url('../assets/images/contactIcons/1.png');
+}
+
+.contact a[aria-label="GitHub profile (opens in new tab)"]::before,
+.contact a[aria-label="GitHub"]::before {
+    background-image: url('../assets/images/contactIcons/2.png');
+}
+
+.contact a[aria-label="LinkedIn profile (opens in new tab)"]::before,
+.contact a[aria-label="LinkedIn"]::before {
+    background-image: url('../assets/images/contactIcons/3.png');
+}
+
 /* ============================================
    CONTACT FORM
    ============================================ */
